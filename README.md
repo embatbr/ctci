@@ -1,2 +1,1 @@
-# ctci
-Cracking The Code Interview
+# Cracking The Code Interview
