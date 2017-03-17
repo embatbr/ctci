@@ -98,6 +98,60 @@ def question_2():
 def question_3():
     print('##### URLify #####\n');
 
+    # time: O(length); space: O(N)
+    def version_1(test):
+        chars = list(test[0]) # doesn't count in the O(.) calculation
+        length = test[1]
+
+        output = [''] * len(chars)
+
+        j = 0
+        for i in range(length):
+            c = chars[i]
+            if c == ' ':
+                output[j] = '%'
+                output[j + 1] = '2'
+                output[j + 2] = '0'
+                j += 3
+            else:
+                output[j] = c
+                j += 1
+
+        return ''.join(output) # doesn't count in the O(.) calculation
+
+    # time: O(length); space: O(1)
+    def version_2(test):
+        chars = list(test[0]) # doesn't count in the O(.) calculation
+        length = test[1]
+
+        i = length - 1
+        j = len(chars) - 1
+        while i >= 0:
+            c = chars[i]
+            if c == ' ':
+                chars[j] = '0'
+                chars[j - 1] = '2'
+                chars[j - 2] = '%'
+                j -= 3
+            else:
+                chars[j] = c
+                j -= 1
+
+            i -= 1
+
+        chars = chars[j + 1 : ]
+        return ''.join(chars) # doesn't count in the O(.) calculation
+
+    tests = [('Mr John Smith        ', 13), (' Mr   John Smith                 ', 18),
+             ('        ', 2), ('    ', 0), ('Mr   John Smith            ', 15)]
+
+    for test in tests:
+        print("version 1 => '{}' URLfied first {} chars to '{}'".format(test[0],
+            test[1], version_1(test)))
+        print("version 2 => '{}' URLfied first {} chars to '{}'".format(test[0],
+            test[1], version_2(test)))
+        print()
+
 
 def main(question):
     import sys
