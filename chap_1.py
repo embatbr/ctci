@@ -24,6 +24,7 @@ def question_1():
         return True
 
     # considers only lowercase letters
+    # hint #117
     # time: O(N); space: O(1)
     def version_3(test):
         mask = 0
@@ -36,14 +37,66 @@ def question_1():
 
         return True
 
-    tests = ["", "abcdefghijklmnopqrstuwvxyz", "abcdefghijklmnopqrstuwvxyza",
-             "aabbcc", "mdifnafanfa", "aifasoid", "zyxvwutsrqponmlkjihgfedcba"]
+    tests = ['', 'abcdefghijklmnopqrstuwvxyz', 'abcdefghijklmnopqrstuwvxyza',
+             'aabbcc', 'mdifnafanfa', 'aifasoid', 'zyxvwutsrqponmlkjihgfedcba']
 
     for test in tests:
         print("version 1 => '{}': {}".format(test, bool(version_1(test))))
         print("version 2 => '{}': {}".format(test, bool(version_2(test))))
         print("version 3 => '{}': {}".format(test, bool(version_3(test))))
         print()
+
+
+def question_2():
+    print('##### Check Permutation #####\n')
+
+    # time: O(A*logA + B*logB); space: O(A + B)
+    def version_1(test):
+        A = test[0]
+        B = test[1]
+
+        if len(A) != len(B):
+            return False
+
+        return sorted(A) == sorted(B)
+
+    # time: O(A), if A and B have the same length; space: O(a + b), with a and b the sizes of stats_A and stats_B
+    def version_2(test):
+        A = test[0]
+        B = test[1]
+
+        if len(A) != len(B):
+            return False
+
+        stats_A = dict()
+        stats_B = dict()
+
+        for i in range(len(A)):
+            A_i = A[i]
+            if A_i not in stats_A:
+                stats_A[A_i] = 0
+            stats_A[A_i] += 1
+
+            B_i = B[i]
+            if B_i not in stats_B:
+                stats_B[B_i] = 0
+            stats_B[B_i] += 1
+
+        return stats_A == stats_B
+
+    tests = [('', ''), ('aabbcc', 'abc'), ('abcaa', 'abcaa'), ('abc', 'bca'),
+             ('abc', 'bda'), ('aabccc', 'aabccccccc')]
+
+    for test in tests:
+        print("version 1 => '{}' is permutation of '{}': {}".format(test[0],
+            test[1], version_1(test)))
+        print("version 2 => '{}' is permutation of '{}': {}".format(test[0],
+            test[1], version_2(test)))
+        print()
+
+
+def question_3():
+    print('##### URLify #####\n');
 
 
 def main(question):
