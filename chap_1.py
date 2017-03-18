@@ -216,6 +216,67 @@ def question_4():
         print()
 
 
+def question_5():
+    print('##### One Away #####\n')
+
+    # time: O(N), where N is the size of the smaller string; space: O(1)
+    def version_1(test):
+        original = test[0]
+        edited = test[1]
+        diff_len = len(original) - len(edited)
+
+        if diff_len == 0: # possible replace
+            num_diffs = 0
+
+            # time: O(N)
+            for i in range(len(original)):
+                if original[i] != edited[i]:
+                    num_diffs += 1
+                if num_diffs > 1:
+                    return False
+
+            return True
+
+        elif diff_len == 1: # possible removal
+            i = j = 0
+
+            # time: O(N), where N is the length of edited
+            while (i < len(original)) and (j < len(edited)):
+                if original[i] == edited[j]:
+                    j += 1
+                i += 1
+
+                if i - j == 2:
+                    return False
+
+            return True
+
+        elif diff_len == -1: # possible insertion
+            i = j = 0
+
+            # time: O(N), where N is the length of original
+            while (i < len(original)) and (j < len(edited)):
+                if original[i] == edited[j]:
+                    i += 1
+                j += 1
+
+                if i - j == -2:
+                    return False
+
+            return True
+
+        return False
+
+    tests = [('pale', 'ple'), ('pales', 'pale'), ('pales', 'bale'), ('pale', 'bale'),
+             ('pale', 'bake'), ('ball', 'balls'), ('ball', 'ballss'), ('ball', 'calls'),
+             ('ball', 'cball'), ('ball', 'cballss'), ('ball', 'call')]
+
+    for test in tests:
+        print("version 1 => '{}' is on way to '{}': {}".format(test[0], test[1],
+            version_1(test)))
+        print()
+
+
 def main(question):
     import sys
 
