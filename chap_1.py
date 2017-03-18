@@ -267,6 +267,78 @@ def question_5():
 
         return False
 
+    # time: O(N), where N is the size of the smaller string; space: O(1)
+    def version_2(test):
+        original = test[0]
+        edited = test[1]
+        diff_len = len(original) - len(edited)
+
+        if diff_len == 0: # possible replace
+            num_diffs = 0
+
+            # time: O(N)
+            for i in range(len(original)):
+                if original[i] != edited[i]:
+                    num_diffs += 1
+                if num_diffs > 1:
+                    return False
+
+            return True
+
+        elif (diff_len == 1) or (diff_len == -1): # possible removal or insertion
+            i = j = 0
+
+            while (i < len(original)) and (j < len(edited)):
+                if original[i] == edited[j]:
+                    i += 1
+                    j += 1
+                else:
+                    if diff_len == 1:
+                        i += 1
+                    else:
+                        j += 1
+
+                if (diff_len == 1 and i - j == 2) or (diff_len == -1 and i - j == -2):
+                    return False
+
+            return True
+
+        return False
+
+    # time: O(N), where N is the size of the smaller string; space: O(1)
+    def version_3(test):
+        original = test[0]
+        edited = test[1]
+        diff_len = len(original) - len(edited)
+
+        if diff_len < -1 or diff_len > 1:
+            return False
+
+        num_diffs = i = j = 0
+        while (i < len(original)) and (j < len(edited)):
+            if diff_len == 0:
+                if original[i] != edited[i]:
+                    num_diffs += 1
+                if num_diffs > 1:
+                    return False
+
+                i += 1
+                j += 1
+            else:
+                if original[i] == edited[j]:
+                    i += 1
+                    j += 1
+                else:
+                    if diff_len == 1:
+                        i += 1
+                    else:
+                        j += 1
+
+                if (diff_len == 1 and i - j == 2) or (diff_len == -1 and i - j == -2):
+                    return False
+
+        return True
+
     tests = [('pale', 'ple'), ('pales', 'pale'), ('pales', 'bale'), ('pale', 'bale'),
              ('pale', 'bake'), ('ball', 'balls'), ('ball', 'ballss'), ('ball', 'calls'),
              ('ball', 'cball'), ('ball', 'cballss'), ('ball', 'call')]
@@ -274,6 +346,10 @@ def question_5():
     for test in tests:
         print("version 1 => '{}' is on way to '{}': {}".format(test[0], test[1],
             version_1(test)))
+        print("version 2 => '{}' is on way to '{}': {}".format(test[0], test[1],
+            version_2(test)))
+        print("version 3 => '{}' is on way to '{}': {}".format(test[0], test[1],
+            version_3(test)))
         print()
 
 
