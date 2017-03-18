@@ -41,9 +41,9 @@ def question_1():
              'aabbcc', 'mdifnafanfa', 'aifasoid', 'zyxvwutsrqponmlkjihgfedcba']
 
     for test in tests:
-        print("version 1 => '{}': {}".format(test, bool(version_1(test))))
-        print("version 2 => '{}': {}".format(test, bool(version_2(test))))
-        print("version 3 => '{}': {}".format(test, bool(version_3(test))))
+        print("version 1 => '{}': {}".format(test, version_1(test)))
+        print("version 2 => '{}': {}".format(test, version_2(test)))
+        print("version 3 => '{}': {}".format(test, version_3(test)))
         print()
 
 
@@ -150,6 +150,69 @@ def question_3():
             test[1], version_1(test)))
         print("version 2 => '{}' URLfied first {} chars to '{}'".format(test[0],
             test[1], version_2(test)))
+        print()
+
+
+def question_4():
+    print('##### Palindrome Permutation #####\n')
+
+    # time: O(N); space: O(N)
+    def version_1(test):
+        odds = set()
+        evens = set()
+
+        test = test.lower() # O(N)
+        for t in test:
+            c = ord(t)
+            if ord('a') <= c <= ord('z'):
+                if c in odds:
+                    odds.remove(c)
+                    evens.add(c)
+                elif c in evens:
+                    evens.remove(c)
+                    odds.add(c)
+                else: # 1st time
+                    odds.add(c)
+
+        return len(odds) <= 1
+
+    # time: O(N); space: O(1)
+    def version_2(test):
+        odds = 0
+        evens = 0
+
+        test = test.lower() # O(N)
+        for t in test:
+            c = ord(t)
+            if ord('a') <= c <= ord('z'):
+                vec = 1 << (c - 97)
+                if (odds & vec) == vec:
+                    odds = odds ^ vec
+                    evens = evens | vec
+                elif (evens & vec) == vec:
+                    evens = evens ^ vec
+                    odds = odds | vec
+                else:
+                    odds = odds | vec
+
+        num_odds_bits = 0
+        for i in range(ord('z') - ord('a') + 1):
+            vec = 1 << i
+            if (odds & vec) == vec:
+                num_odds_bits += 1
+            if num_odds_bits > 1:
+                return False
+
+        return num_odds_bits <= 1
+
+    tests = ['Tact Coa', 'arara', 'casa', '', 'palindrome', 'Madam I\'m Adam',
+             'Madam I am Adam', 'coco']
+
+    for test in tests:
+        print("version 1 => '{}' has palindrome permutation: {}".format(test,
+            version_1(test)))
+        print("version 2 => '{}' has palindrome permutation: {}".format(test,
+            version_2(test)))
         print()
 
 
