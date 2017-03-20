@@ -41,9 +41,9 @@ def question_1():
              'aabbcc', 'mdifnafanfa', 'aifasoid', 'zyxvwutsrqponmlkjihgfedcba']
 
     for test in tests:
-        print("version 1 => '{}': {}".format(test, version_1(test)))
-        print("version 2 => '{}': {}".format(test, version_2(test)))
-        print("version 3 => '{}': {}".format(test, version_3(test)))
+        print("version 1 => '{}' is unique: {}".format(test, version_1(test)))
+        print("version 2 => '{}' is unique: {}".format(test, version_2(test)))
+        print("version 3 => '{}' is unique: {}".format(test, version_3(test)))
         print()
 
 
@@ -102,6 +102,7 @@ def question_3():
     def version_1(test):
         chars = list(test[0]) # doesn't count in the O(.) calculation
         length = test[1]
+        expected = test[2]
 
         output = [''] * len(chars)
 
@@ -117,12 +118,15 @@ def question_3():
                 output[j] = c
                 j += 1
 
-        return ''.join(output) # doesn't count in the O(.) calculation
+        chars = ''.join(output) # doesn't count in the O(.) calculation
+
+        return chars == expected
 
     # time: O(length); space: O(1)
     def version_2(test):
         chars = list(test[0]) # doesn't count in the O(.) calculation
         length = test[1]
+        expected = test[2]
 
         i = length - 1
         j = len(chars) - 1
@@ -140,16 +144,20 @@ def question_3():
             i -= 1
 
         chars = chars[j + 1 : ]
-        return ''.join(chars) # doesn't count in the O(.) calculation
+        chars = ''.join(chars) # doesn't count in the O(.) calculation
 
-    tests = [('Mr John Smith        ', 13), (' Mr   John Smith                 ', 18),
-             ('        ', 2), ('    ', 0), ('Mr   John Smith            ', 15)]
+        return chars == expected
+
+    tests = [('Mr John Smith        ', 13, 'Mr%20John%20Smith'),
+             (' Mr   John Smith                 ', 18, '%20Mr%20%20%20John%20Smith%20%20'),
+             ('        ', 2, '%20%20'), ('    ', 0, ''),
+             ('Mr   John Smith            ', 15, 'Mr%20%20%20John%20Smith')]
 
     for test in tests:
-        print("version 1 => '{}' URLfied first {} chars to '{}'".format(test[0],
-            test[1], version_1(test)))
-        print("version 2 => '{}' URLfied first {} chars to '{}'".format(test[0],
-            test[1], version_2(test)))
+        print("version 1 => '{}' URLfied first {} chars to '{}': {}".format(test[0],
+            test[1], test[2], version_1(test)))
+        print("version 2 => '{}' URLfied first {} chars to '{}': {}".format(test[0],
+            test[1], test[2], version_2(test)))
         print()
 
 
@@ -350,6 +358,41 @@ def question_5():
             version_2(test)))
         print("version 3 => '{}' is on way to '{}': {}".format(test[0], test[1],
             version_3(test)))
+        print()
+
+
+def question_6():
+    print('##### String Compression #####\n')
+
+    tests = [('abc', 'abc'), ('aabbcc', 'aabbcc'), ('aabbccc', 'a2b2c3'),
+             ('aabcccccaaa', 'a2b1c5a3')]
+
+    def version_1(test):
+        given = test[0]
+        expected = test[1]
+
+        compressed = ''
+        cur = prev = given[0]
+        i = freq = 0
+
+        while i <= len(given):
+            cur = given[i] if i < len(given) else None
+            if i < len(given) and cur == prev:
+                freq += 1
+            else:
+                compressed = '{}{}{}'.format(compressed, prev, freq)
+                freq = 1
+
+            prev = cur
+            i += 1
+
+        final = compressed if len(compressed) < len(given) else given
+
+        return final == expected
+
+    for test in tests:
+        print("version 1 => '{}' is compressed to '{}': {}".format(test[0], test[1],
+            version_1(test)))
         print()
 
 
