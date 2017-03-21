@@ -367,6 +367,7 @@ def question_6():
     tests = [('abc', 'abc'), ('aabbcc', 'aabbcc'), ('aabbccc', 'a2b2c3'),
              ('aabcccccaaa', 'a2b1c5a3')]
 
+    # time: O(N) or O(N*d), where O(d) is the order to turn int into string; space: O(N)
     def version_1(test):
         given = test[0]
         expected = test[1]
@@ -393,6 +394,57 @@ def question_6():
     for test in tests:
         print("version 1 => '{}' is compressed to '{}': {}".format(test[0], test[1],
             version_1(test)))
+        print()
+
+
+def question_7():
+    print('##### Rotate Matrix #####\n')
+
+    def version_1(test):
+        size = len(test)
+        middled = int(size / 2)
+
+        end = size - 1
+        for i in range(middled):
+            for j in range(i, end - i):
+                upper_left_line = i
+                upper_left_column = j % size
+                upper_left_value = test[upper_left_line][upper_left_column]
+
+                bottom_left_line = end - j
+                bottom_left_column = i % size
+                test[upper_left_line][upper_left_column] = test[bottom_left_line][bottom_left_column]
+
+                bottom_right_line = end - i
+                bottom_right_column = end - j
+                test[bottom_left_line][bottom_left_column] = test[bottom_right_line][bottom_right_column]
+
+                upper_right_line = j
+                upper_right_column = end - i
+                test[bottom_right_line][bottom_right_column] = test[upper_right_line][upper_right_column]
+
+                test[upper_right_line][upper_right_column] = upper_left_value;
+
+    tests = [
+        [['1-1']],
+        [['1-1', '1-2', '1-3', '1-4'], ['2-1', '2-2', '2-3', '2-4'], ['3-1', '3-2', '3-3', '3-4'],
+            ['4-1', '4-2', '4-3', '4-4']],
+        [['1-1', '1-2', '1-3', '1-4', '1-5'], ['2-1', '2-2', '2-3', '2-4', '2-5'], ['3-1', '3-2', '3-3', '3-4', '3-5'],
+            ['4-1', '4-2', '4-3', '4-4', '4-5'], ['5-1', '5-2', '5-3', '5-4', '5-5']]
+    ]
+
+    def show_matrix(matrix):
+        for line in matrix:
+            for elto in line:
+                print(elto, end=' ')
+            print()
+
+    for test in tests:
+        print("version 1 =>\nmatrix")
+        show_matrix(test)
+        version_1(test)
+        print("rotated to")
+        show_matrix(test)
         print()
 
 
