@@ -54,3 +54,40 @@ def question_1():
 
 def question_2():
     print('##### Run Kth to Last #####\n')
+
+    # time: O(N); space O(1)
+    def version_1(test):
+        (head, _) = create_linked_list(test[0]) # doesn't count in the O(.) calculation
+        k = test[1]
+        expected = test[2]
+
+        node = head
+        num_nodes = 0
+        while node:
+            num_nodes += 1
+            node = node.next
+
+        node = None
+        if 0 < k <= num_nodes:
+            num_nodes = num_nodes - k
+            node = head
+            while num_nodes > 0:
+                node = node.next
+                num_nodes -= 1
+
+            return node.value == expected
+
+        return node == expected
+
+    tests = [
+        (list(), 1, None),
+        ([1, 2, 3], 3, 1),
+        ([1, 2, 3], 0, None),
+        ([4, 3, 2, 1], 1, 1),
+        ([4, 3, 2, 1], 4, 4),
+        ([4, 3, 2, 1], 5, None)
+    ]
+
+    for test in tests:
+        print('version 1 => k = {}, in list {} is {}: {}'.format(test[1], test[0], test[2], version_1(test)))
+        print()
