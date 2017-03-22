@@ -1,3 +1,7 @@
+from copy import deepcopy
+from utils import show_matrix
+
+
 def question_1():
     print('##### Is Unique #####\n')
 
@@ -401,7 +405,10 @@ def question_7():
     print('##### Rotate Matrix #####\n')
 
     def version_1(test):
-        size = len(test)
+        given = test[0]
+        expected = test[1]
+
+        size = len(given)
         middled = int(size / 2)
 
         end = size - 1
@@ -409,42 +416,217 @@ def question_7():
             for j in range(i, end - i):
                 upper_left_line = i
                 upper_left_column = j % size
-                upper_left_value = test[upper_left_line][upper_left_column]
+                upper_left_value = given[upper_left_line][upper_left_column]
 
                 bottom_left_line = end - j
                 bottom_left_column = i % size
-                test[upper_left_line][upper_left_column] = test[bottom_left_line][bottom_left_column]
+                given[upper_left_line][upper_left_column] = given[bottom_left_line][bottom_left_column]
 
                 bottom_right_line = end - i
                 bottom_right_column = end - j
-                test[bottom_left_line][bottom_left_column] = test[bottom_right_line][bottom_right_column]
+                given[bottom_left_line][bottom_left_column] = given[bottom_right_line][bottom_right_column]
 
                 upper_right_line = j
                 upper_right_column = end - i
-                test[bottom_right_line][bottom_right_column] = test[upper_right_line][upper_right_column]
+                given[bottom_right_line][bottom_right_column] = given[upper_right_line][upper_right_column]
 
-                test[upper_right_line][upper_right_column] = upper_left_value;
+                given[upper_right_line][upper_right_column] = upper_left_value;
+
+        return given == expected
 
     tests = [
-        [['1-1']],
-        [['1-1', '1-2', '1-3', '1-4'], ['2-1', '2-2', '2-3', '2-4'], ['3-1', '3-2', '3-3', '3-4'],
+        ([['1-1']], [['1-1']]),
+        ([['1-1', '1-2', '1-3', '1-4'], ['2-1', '2-2', '2-3', '2-4'], ['3-1', '3-2', '3-3', '3-4'],
             ['4-1', '4-2', '4-3', '4-4']],
-        [['1-1', '1-2', '1-3', '1-4', '1-5'], ['2-1', '2-2', '2-3', '2-4', '2-5'], ['3-1', '3-2', '3-3', '3-4', '3-5'],
-            ['4-1', '4-2', '4-3', '4-4', '4-5'], ['5-1', '5-2', '5-3', '5-4', '5-5']]
+         [['4-1', '3-1', '2-1', '1-1'], ['4-2', '3-2', '2-2', '1-2'], ['4-3', '3-3', '2-3', '1-3'],
+            ['4-4', '3-4', '2-4', '1-4']]),
+        ([['1-1', '1-2', '1-3', '1-4', '1-5'], ['2-1', '2-2', '2-3', '2-4', '2-5'], ['3-1', '3-2', '3-3', '3-4', '3-5'],
+            ['4-1', '4-2', '4-3', '4-4', '4-5'], ['5-1', '5-2', '5-3', '5-4', '5-5']],
+         [['5-1', '4-1', '3-1', '2-1', '1-1'], ['5-2', '4-2', '3-2', '2-2', '1-2'], ['5-3', '4-3', '3-3', '2-3', '1-3'],
+            ['5-4', '4-4', '3-4', '2-4', '1-4'], ['5-5', '4-5', '3-5', '2-5', '1-5']])
     ]
-
-    def show_matrix(matrix):
-        for line in matrix:
-            for elto in line:
-                print(elto, end=' ')
-            print()
 
     for test in tests:
         print("version 1 =>\nmatrix")
-        show_matrix(test)
-        version_1(test)
+        show_matrix(test[0])
+        result = version_1(test)
         print("rotated to")
-        show_matrix(test)
+        show_matrix(test[1])
+        print(result)
+        print()
+
+
+def question_8():
+    print('##### Zero Matrix #####\n')
+
+    # time: O(M*N); space: O(M*N + M + N)
+    def version_1(test):
+        given = test[0]
+        expected = test[1]
+
+        num_lines = len(given)
+        num_columns = len(given[0])
+
+        output = deepcopy(given)
+        zeroed_lines = set()
+        zeroed_columns = set()
+
+        for i in range(num_lines):
+            for j in range(num_columns):
+                elto = given[i][j]
+                if elto == 0:
+                    zeroed_lines.add(i)
+                    zeroed_columns.add(j)
+
+        for i in range(num_lines):
+            for j in range(num_columns):
+                if i in zeroed_lines or j in zeroed_columns:
+                    output[i][j] = 0
+
+        return output == expected
+
+    # time: O(M*N); space: O(M + N)
+    def version_2(test):
+        given = test[0]
+        expected = test[1]
+
+        num_lines = len(given)
+        num_columns = len(given[0])
+
+        zeroed_lines = set()
+        zeroed_columns = set()
+
+        for i in range(num_lines):
+            for j in range(num_columns):
+                elto = given[i][j]
+                if elto == 0:
+                    zeroed_lines.add(i)
+                    zeroed_columns.add(j)
+
+        for i in range(num_lines):
+            for j in range(num_columns):
+                if i in zeroed_lines or j in zeroed_columns:
+                    given[i][j] = 0
+
+        return given == expected
+
+    # time: O(M*N); space: O(1)
+    def version_3(test):
+        given = test[0]
+        expected = test[1]
+
+        num_lines = len(given)
+        num_columns = len(given[0])
+
+        zeroed_lines = 0
+        zeroed_columns = 0
+
+        for i in range(num_lines):
+            for j in range(num_columns):
+                elto = given[i][j]
+                if elto == 0:
+                    zeroed_lines |= 1 << i
+                    zeroed_columns |= 1 << j
+
+        for i in range(num_lines):
+            for j in range(num_columns):
+                vec_lines = 1 << i
+                vec_columns = 1 << j
+
+                if (zeroed_lines & vec_lines == vec_lines) or (zeroed_columns & vec_columns == vec_columns):
+                    given[i][j] = 0
+
+        return given == expected
+
+    tests = [
+        ([[0, 2, 0], [4, 5, 0], [7, 8, 9]], [[0, 0, 0], [0, 0, 0], [0, 8, 0]]),
+        ([[1, 0], [3, 4], [5, 0], [7, 8]], [[0, 0], [3, 0], [0, 0], [7, 0]]),
+        ([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 0, 15]],
+            [[1, 2, 3, 0, 5], [6, 7, 8, 0, 10], [0, 0, 0, 0, 0]])
+    ]
+
+    for test in tests:
+        print("version 1 =>\nmatrix")
+        show_matrix(test[0])
+        result = version_1(test)
+        print('rotated to')
+        show_matrix(test[1])
+        print(result)
+        print()
+
+        test_version_2 = deepcopy(test)
+        print("version 2 =>\nmatrix")
+        show_matrix(test_version_2[0])
+        result = version_2(test_version_2)
+        print('rotated to')
+        show_matrix(test_version_2[1])
+        print(result)
+        print()
+
+        test_version_3 = deepcopy(test)
+        print("version 3 =>\nmatrix")
+        show_matrix(test_version_3[0])
+        result = version_3(test_version_3)
+        print('rotated to')
+        show_matrix(test_version_3[1])
+        print(result)
+        print()
+
+
+def question_9():
+    print('##### String Rotation #####\n')
+
+    # time: O(N); space: O(N) (considering the indexed strings must be copied)
+    def version_1(test):
+        given = test[0]
+        expected = test[1]
+
+        if len(given) != len(expected):
+            return False
+
+        for i in range(len(given)):
+            i_comp = len(expected) - i
+
+            if given[i : ] == expected[ : i_comp] and expected[i_comp : ] == given[ : i]:
+                return True
+
+        return False
+
+    def version_2(test):
+        given = test[0]
+        expected = test[1]
+
+        if len(given) != len(expected):
+            return False
+
+        i = j = 0
+        found_first_equal = False
+        while j < len(expected):
+            g = given[i]
+            e = expected[j]
+
+            i = (i + 1) % len(given)
+
+            if g == e:
+                found_first_equal = True
+                j += 1
+
+                if j > len(given):
+                    return False
+
+            if found_first_equal and (g != e):
+                return False
+
+        return True
+
+    tests = [('waterbottle', 'erbottlewat'), ('waterbottle', 'erbottlehov'),
+             ('waterbottle', 'bottlewater'), ('waterbottle', 'bottlehover'),
+             ('waterbottle', 'bottlewaters'), ('waterbottle', 'erbottlewaterbottlewat'),
+             ('erbottlewaterbottlewat', 'waterbottle'), ('erbottlewaterbottlewat', 'erbottlewat')]
+
+    for test in tests:
+        print("version 1 => '{}' is a rotation of '{}': {}".format(test[0], test[1], version_1(test)))
+        print("version 2 => '{}' is a rotation of '{}': {}".format(test[0], test[1], version_2(test)))
         print()
 
 
