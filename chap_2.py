@@ -1,4 +1,4 @@
-from utils import LinkedList
+from utils import LinkedListNode, create_linked_list, reduce_linked_list_to_str
 
 
 def question_1():
@@ -24,16 +24,7 @@ def question_1():
         given = test[0]
         expected = test[1]
 
-        # this block is not considered in the O(.) function calculation
-        head = tail = None
-        for g in given:
-            node = LinkedList(g)
-            if tail:
-                tail.next = node
-                node.prev = tail
-                tail = node
-            else:
-                head = tail = node
+        (head, _) = create_linked_list(given) # considered in the O(.) function calculation
 
         node_1 = head
         while node_1:
@@ -48,14 +39,8 @@ def question_1():
 
             node_1 = node_1.next
 
-        # this block is not considered in the O(.) function calculation
-        given = ''
-        node = head
-        while node:
-            given = '{}{}'.format(given, node.value)
-            node = node.next
+        given = reduce_linked_list_to_str(head) # considered in the O(.) function calculation
 
-        given = ''.join(given)
         return given == expected
 
     tests = [('', ''), ('abcdee', 'abcde'), ('abcddefacdlkasdlk', 'abcdeflks'),
@@ -65,3 +50,7 @@ def question_1():
         print("version 1 => '{}' becomes '{}': {}".format(test[0], test[1], version_1(test)))
         print("version 2 => '{}' becomes '{}': {}".format(test[0], test[1], version_2(test)))
         print()
+
+
+def question_2():
+    print('##### Run Kth to Last #####\n')

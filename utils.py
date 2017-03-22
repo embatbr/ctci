@@ -9,9 +9,32 @@ def show_matrix(matrix):
         print()
 
 
-class LinkedList(object):
+class LinkedListNode(object):
 
     def __init__(self, value):
         self.value = value
         self.prev = None
         self.next = None
+
+def create_linked_list(seq):
+    head = tail = None
+    for seq in seq:
+        node = LinkedListNode(seq)
+        if tail:
+            tail.next = node
+            node.prev = tail
+            tail = node
+        else:
+            head = tail = node
+
+    return (head, tail)
+
+def reduce_linked_list_to_str(head):
+    string = ''
+
+    node = head
+    while node:
+        string = '{}{}'.format(string, node.value)
+        node = node.next
+
+    return string
