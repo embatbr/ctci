@@ -628,12 +628,3 @@ def question_9():
         print("version 1 => '{}' is a rotation of '{}': {}".format(test[0], test[1], version_1(test)))
         print("version 2 => '{}' is a rotation of '{}': {}".format(test[0], test[1], version_2(test)))
         print()
-
-
-def main(question):
-    import sys
-
-    print('##### Question {} #####'.format(question))
-
-    module = sys.modules[__name__]
-    getattr(module, 'question_{}'.format(question))()
