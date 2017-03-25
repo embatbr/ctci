@@ -16,13 +16,14 @@ class LinkedListNode(object):
         self.prev = None
         self.next = None
 
-def create_linked_list(seq):
+def create_linked_list(seq, doubly=False):
     head = tail = None
-    for seq in seq:
-        node = LinkedListNode(seq)
+    for s in seq:
+        node = LinkedListNode(s)
         if tail:
             tail.next = node
-            node.prev = tail
+            if doubly:
+                node.prev = tail
             tail = node
         else:
             head = tail = node
