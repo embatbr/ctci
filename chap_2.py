@@ -4,7 +4,7 @@ from utils import LinkedListNode, create_linked_list, reduce_linked_list_to_str
 def question_1():
     print('##### Remove Dups #####\n')
 
-    # time: O(N); space: O(1)
+    # time: O(N); space: O(N) (hashset 'chars')
     def version_1(test):
         given = test[0]
         expected = test[1]
@@ -84,3 +84,34 @@ def question_2():
 
 def question_3():
     print('##### Delete Middle Node #####\n')
+
+    # time: O(N); space: O(1)
+    def version_1(test):
+        given = test[0]
+        value = test[1]
+        expected = test[2]
+
+        (head, _) = create_linked_list(given) # not considered in the O(.) function calculation
+
+        if head:
+            prev = head
+            node = head.next
+            while node:
+                if node.value == value and node.next:
+                    prev.next = node.next
+                    break
+
+                prev = node
+                node = node.next
+
+        output = reduce_linked_list_to_str(head) # not considered in the O(.) function calculation
+
+        return output == expected
+
+    tests = [('', 'a', ''), ('abcdef', 'c', 'abdef'), ('abcdef', 'a', 'abcdef'),
+             ('abcdef', 'f', 'abcdef'), ('abbbf', 'b', 'abbf')]
+
+    for test in tests:
+        print("version 1 => '{}' after removal of '{}' becomes '{}': {}".format(test[0], test[1], test[2],
+            version_1(test)))
+        print()
