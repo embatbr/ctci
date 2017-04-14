@@ -39,3 +39,37 @@ def reduce_linked_list_to_str(head):
         node = node.next
 
     return string
+
+
+class StackItem(object):
+
+    def __init__(self, value):
+        self.value = value
+        self.below = None
+
+class EndlessStack(object):
+
+    def __init__(self):
+        self.top = None
+        self.size = 0
+
+    def push(self, value, constructor=StackItem):
+        item = constructor(value)
+
+        if not self.top:
+            self.top = item
+        else:
+            item.below = self.top
+            self.top = item
+
+        self.size += 1
+
+    def pop(self):
+        if not self.top:
+            return None
+
+        value = self.top.value
+        self.top = self.top.below
+        self.size -= 1
+
+        return value

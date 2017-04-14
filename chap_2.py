@@ -115,3 +115,7 @@ def question_3():
         print("version 1 => '{}' after removal of '{}' becomes '{}': {}".format(test[0], test[1], test[2],
             version_1(test)))
         print()
+
+
+def question_4():
+    print('##### Partition #####\n')
