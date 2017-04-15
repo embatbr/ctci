@@ -47,7 +47,7 @@ class StackItem(object):
         self.value = value
         self.below = None
 
-class EndlessStack(object):
+class Stack(object):
 
     def __init__(self):
         self.top = None
@@ -73,3 +73,18 @@ class EndlessStack(object):
         self.size -= 1
 
         return value
+
+    def is_empty(self):
+        return not self.top
+
+    def to_array(self):
+        array = list()
+
+        item = self.top
+        while item:
+            array.append(item.value)
+            item = item.below
+
+        array.reverse()
+
+        return array
