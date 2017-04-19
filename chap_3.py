@@ -1,14 +1,15 @@
-from utils import StackItem, Stack
+from utils import Item, Stack
 
 
 def question_2():
     print('##### Stack Min #####\n')
 
+    # time: O(N); space: O(N)
     def version_1(test):
-        class StackItemWithMin(StackItem):
+        class ItemWithMin(Item):
 
             def __init__(self, value):
-                super(StackItemWithMin, self).__init__(value)
+                super(ItemWithMin, self).__init__(value)
                 self.my_min = value
 
             def check_min(self):
@@ -21,13 +22,14 @@ def question_2():
                 super(StackWithMin, self).__init__()
 
             def push(self, value):
-                super(StackWithMin, self).push(value, constructor=StackItemWithMin)
+                super(StackWithMin, self).push(value, constructor=ItemWithMin)
                 self.top.check_min()
 
             def min(self):
                 if self.is_empty():
-                    return self.top.my_min
-                return None
+                    return None
+
+                return self.top.my_min
 
         (given_seq, num_pops, expected) = test
 
@@ -57,6 +59,7 @@ def question_2():
 def question_3():
     print('##### Stack of Plates #####\n')
 
+    # time: O(N); space: O(N)
     class SetOfStacks(object):
 
         def __init__(self, threshold):
@@ -112,15 +115,111 @@ def question_3():
         for _ in range(num_pops):
             set_of_stacks.pop()
 
+        print(set_of_stacks.to_array_list())
+
         return set_of_stacks.to_array_list() == expected
 
     tests = [
-        (range(1, 11), 3, 0, [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10]]),
-        (range(1, 11), 5, 0, [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]]),
-        (range(1, 11), 3, 2, [[1, 2, 3], [4, 5, 6], [7, 8]])
+        (range(1, 11), 3, 0, [[3, 2, 1], [6, 5, 4], [9, 8, 7], [10]]),
+        (range(1, 11), 5, 0, [[5, 4, 3, 2, 1], [10, 9, 8, 7, 6]]),
+        (range(1, 11), 3, 2, [[3, 2, 1], [6, 5, 4], [8, 7]])
     ]
 
     for test in tests:
         print('version 1 => {} stacked into {} stacks of max size {} and equal to {} after {} pops: {}'.
             format(list(test[0]), len(test[3]), test[1], test[3], test[2], version_1(test)))
+        print()
+
+
+def question_4():
+    print('##### Queue via Stacks #####\n')
+
+    def version_1(test):
+        forward_stack = Stack()
+        backward_stack = Stack()
+
+        for t in test:
+            forward_stack.push(t)
+
+        while not forward_stack.is_empty():
+            backward_stack.push(forward_stack.pop())
+
+        expected = ''
+        while not backward_stack.is_empty():
+            t = backward_stack.pop()
+            expected = '{}{}'.format(expected, t)
+
+        return test == expected
+
+    tests = ['', 'abcdefghijklmnopqrstuvwxyz', 'abcdefghijklmnopqrstuvwxyza',
+             'aabbcc', 'mdifnafanfa', 'aifasoid', 'zyxvwutsrqponmlkjihgfedcba']
+
+    for test in tests:
+        print("version 1 => '{}' insert in queue: {}".format(test, version_1(test)))
+        print()
+
+
+def question_5():
+    print('##### Sort Stack #####\n')
+
+    def version_1(test):
+        (given, expected) = test
+
+        original_stack = Stack()
+        sorted_stack = Stack()
+
+        for g in given:
+            original_stack.push(g)
+
+        num_eltos = original_stack.size
+
+        while not original_stack.is_empty():
+            pivot = original_stack.pop()
+
+            while (not sorted_stack.is_empty()) and (pivot < sorted_stack.peek()):
+                original_stack.push(sorted_stack.pop())
+            sorted_stack.push(pivot)
+
+        while not sorted_stack.is_empty():
+            original_stack.push(sorted_stack.pop())
+
+        given_str = ''.join(original_stack.to_array())
+        return given_str == expected
+
+    def version_2(test):
+        (given, expected) = test
+
+        original_stack = Stack()
+        sorted_stack = Stack()
+
+        for g in given:
+            original_stack.push(g)
+
+        num_eltos = original_stack.size
+
+        for i in range(num_eltos):
+            pivot = original_stack.pop()
+
+            num_swaps = 0
+            while (not sorted_stack.is_empty()) and (pivot < sorted_stack.peek()):
+                original_stack.push(sorted_stack.pop())
+                num_swaps += 1
+            sorted_stack.push(pivot)
+
+            for _ in range(num_swaps):
+                sorted_stack.push(original_stack.pop())
+
+        while not sorted_stack.is_empty():
+            original_stack.push(sorted_stack.pop())
+
+        given_str = ''.join(original_stack.to_array())
+        return given_str == expected
+
+    tests = [('', ''), ('abcdefghijklmnopqrstuvwxyz', 'abcdefghijklmnopqrstuvwxyz'),
+             ('zyxvwutsrqponmlkjihgfedcba', 'abcdefghijklmnopqrstuvwxyz'),
+             ('wqhrgacdzbmsnlvukjfpteixoy', 'abcdefghijklmnopqrstuvwxyz')]
+
+    for test in tests:
+        print("version 1 => '{}' sorted as '{}': {}".format(test[0], test[1], version_1(test)))
+        print("version 2 => '{}' sorted as '{}': {}".format(test[0], test[1], version_2(test)))
         print()

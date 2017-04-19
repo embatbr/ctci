@@ -41,7 +41,7 @@ def reduce_linked_list_to_str(head):
     return string
 
 
-class StackItem(object):
+class Item(object):
 
     def __init__(self, value):
         self.value = value
@@ -53,7 +53,7 @@ class Stack(object):
         self.top = None
         self.size = 0
 
-    def push(self, value, constructor=StackItem):
+    def push(self, value, constructor=Item):
         item = constructor(value)
 
         if not self.top:
@@ -64,11 +64,17 @@ class Stack(object):
 
         self.size += 1
 
+    def peek(self):
+        if self.top:
+            return self.top.value
+
+        return None
+
     def pop(self):
         if not self.top:
             return None
 
-        value = self.top.value
+        value = self.peek()
         self.top = self.top.below
         self.size -= 1
 
@@ -85,6 +91,83 @@ class Stack(object):
             array.append(item.value)
             item = item.below
 
-        array.reverse()
-
         return array
+
+
+class ArrayQueue(object):
+
+    def __init__(self):
+        self.nodes = list()
+
+    def enqueue(self, node):
+        self.nodes.append(node)
+
+    def dequeue(self):
+        node = self.nodes[0]
+        self.nodes = self.nodes[1 : ]
+        return node
+
+    def is_empty(self):
+        return not self.nodes
+
+class Node(object):
+
+    def __init__(self, value):
+        self.value = value
+        self.adjacents = list()
+        self.visited = False
+
+    def connect(self, node):
+        self.adjacents.append(node)
+
+class Graph(object):
+
+    def __init__(self, nodes, adjacents_list):
+        if len(nodes) != len(adjacents_list):
+            return Exception('nodes and adjacents_list must have the same length.')
+
+        self.nodes = nodes
+        for i in range(len(adjacents_list)):
+            node = self.nodes[i]
+            adjacents = adjacents_list[i]
+            for adjacent in adjacents:
+                node.connect(self.nodes[adjacent])
+
+    def flush(self):
+        for node in self.nodes:
+            node.visited = False
+
+    def dfs(self, source, target):
+        source.visited = True
+
+        if source == target:
+            return [source.value]
+        else:
+            for adjacent in source.adjacents:
+                if not adjacent.visited:
+                    path = self.dfs(adjacent, target)
+                    if path:
+                        path.insert(0, source.value)
+                        return path
+
+        return list()
+
+    def bfs(self, source, target):
+        queue = ArrayQueue()
+
+        queue.enqueue(source)
+
+        while not queue.is_empty():
+            node = queue.dequeue()
+
+            if node == target:
+                return True
+
+            node.visited = True
+
+            for adjacent in node.adjacents:
+                if not adjacent.visited:
+                    adjacent.visited = True
+                    queue.enqueue(adjacent)
+
+        return False
