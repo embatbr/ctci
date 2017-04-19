@@ -171,3 +171,35 @@ class Graph(object):
                     queue.enqueue(adjacent)
 
         return False
+
+
+class TreeNode(object):
+
+    def __init__(self, value):
+        self.value = value
+        self.left = None
+        self.right = None
+
+    def add(self, value):
+        if value <= self.value:
+            if self.left:
+                self.left.add(value)
+            else:
+                self.left = TreeNode(value)
+
+        elif value > self.value:
+            if self.right:
+                self.right.add(value)
+            else:
+                self.right = TreeNode(value)
+
+    def depth(self):
+        depth = 1
+        left_depth = self.left.depth() if self.left else 0
+        right_depth = self.right.depth() if self.right else 0
+
+        depth = 1 + max(left_depth, right_depth)
+        return depth
+
+    def __str__(self):
+        return '{} => ({}, {})'.format(self.value, str(self.left), str(self.right))
