@@ -1,4 +1,4 @@
-from utils import Node, Graph, TreeNode
+from utils import Node, Graph, TreeNode, insert_into_tree
 
 
 def question_1():
@@ -39,27 +39,13 @@ def question_2():
     def version_1(test):
         (given, expected) = test
 
-        def insert_into_tree(root, eltos):
-            middle = len(eltos) // 2
-            if not root:
-                root = TreeNode(eltos[middle])
-            else:
-                root.add(eltos[middle])
-
-            left = eltos[ : middle]
-            if left:
-                insert_into_tree(root, left)
-            right = eltos[middle + 1 : ]
-            if right:
-                insert_into_tree(root, right)
-
-            return root
-
         root = None
         if given:
             root = insert_into_tree(root, given)
 
         depth = root.depth() if root else 0
+
+        print(root)
 
         return depth == expected
 
@@ -76,4 +62,45 @@ def question_2():
     for test in tests:
         print('version 1 => list {} makes a tree with minimal depth {}: {}'.format(test[0], test[1],
                                                                                    version_1(test)))
+        print()
+
+
+def question_3():
+    print('##### List of Depths #####\n')
+
+    def version_1(test):
+        (given, expected) = test
+
+        root = None
+        result = list()
+
+        if given:
+            root = insert_into_tree(root, given)
+            size = root.depth()
+            result = [list() for _ in range(size)]
+
+            def link_node(node, index):
+                if not node:
+                    return
+
+                result[index].append(node.value)
+                link_node(node.left, index + 1)
+                link_node(node.right, index + 1)
+
+            link_node(root, 0)
+
+        print(result)
+
+        return result == expected
+
+    tests = [
+        (list(), list()),
+        ([1], [[1]]),
+        ([1, 2], [[2], [1]]),
+        ([1, 2, 3], [[2], [1, 3]]),
+        (list(range(1, 11)), [[6], [3, 9], [2, 5, 8, 10], [1, 4, 7]])
+    ]
+
+    for test in tests:
+        print('version 1 => list {} to {}: {}'.format(test[0], test[1], version_1(test)))
         print()
