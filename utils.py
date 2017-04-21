@@ -240,6 +240,26 @@ def insert_into_tree(root, eltos):
     return root
 
 
+# ### SORTS ###
+
+
+def insertion_sort(array, in_place=True):
+    output = array if in_place else list(array)
+    N = len(output)
+
+    for i in range(1, N):
+        pivot = output[i]
+        hole_pos = i
+
+        while hole_pos > 0 and pivot < output[hole_pos - 1]:
+            output[hole_pos] = output[hole_pos - 1]
+            hole_pos = hole_pos - 1
+
+        output[hole_pos] = pivot
+
+    return output
+
+
 def mergesort(array):
     helper = [None for _ in range(len(array))]
     _mergesort(array, helper, 0, len(array) - 1)

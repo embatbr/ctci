@@ -1,10 +1,10 @@
-from utils import LinkedListNode, create_linked_list, reduce_linked_list_to_str
+from utils import test_question, LinkedListNode, create_linked_list, reduce_linked_list_to_str
 
 
 def question_1():
     print('##### Remove Dups #####\n')
 
-    # time: O(N); space: O(N) (hashset 'chars')
+    # time: O(N); space: O(N)
     def version_1(test):
         given = test[0]
         expected = test[1]
@@ -30,12 +30,19 @@ def question_1():
 
         return output == expected
 
-    tests = [('', ''), ('abcdee', 'abcde'), ('abcddefacdlkasdlk', 'abcdeflks'),
-             ('abcdefghijklmnopqrstuvwxyz', 'abcdefghijklmnopqrstuvwxyz'),
-             ('abcdeyzabcd', 'abcdeyz')]
+    tests = [
+        ('', ''),
+        ('abcdee', 'abcde'),
+        ('abcddefacdlkasdlk', 'abcdeflks'),
+        ('abcdefghijklmnopqrstuvwxyz', 'abcdefghijklmnopqrstuvwxyz'),
+        ('abcdeyzabcd', 'abcdeyz')
+    ]
 
     for test in tests:
-        print("version 1 => '{}' becomes '{}': {}".format(test[0], test[1], version_1(test)))
+        for version in range(1, 2):
+            test_question("version %d => '{}' becomes '{}'" % version,
+                          [test[0], test[1]],
+                          locals()['version_%d' % version](test))
         print()
 
 
@@ -78,7 +85,10 @@ def question_2():
     ]
 
     for test in tests:
-        print('version 1 => k = {}, in list {} is {}: {}'.format(test[1], test[0], test[2], version_1(test)))
+        for version in range(1, 2):
+            test_question("version %d => k = {}, in list {} is {}" % version,
+                          [test[1], test[0], test[2]],
+                          locals()['version_%d' % version](test))
         print()
 
 
@@ -97,7 +107,7 @@ def question_3():
             prev = head
             node = head.next
             while node:
-                if node.value == value and node.next:
+                if node.value == value and node.next: # node.next avoids matching the tail
                     prev.next = node.next
                     break
 
@@ -108,10 +118,17 @@ def question_3():
 
         return output == expected
 
-    tests = [('', 'a', ''), ('abcdef', 'c', 'abdef'), ('abcdef', 'a', 'abcdef'),
-             ('abcdef', 'f', 'abcdef'), ('abbbf', 'b', 'abbf')]
+    tests = [
+        ('', 'a', ''),
+        ('abcdef', 'c', 'abdef'),
+        ('abcdef', 'a', 'abcdef'),
+        ('abcdef', 'f', 'abcdef'),
+        ('abbbf', 'b', 'abbf')
+    ]
 
     for test in tests:
-        print("version 1 => '{}' after removal of '{}' becomes '{}': {}".format(test[0], test[1], test[2],
-            version_1(test)))
+        for version in range(1, 2):
+            test_question("version %d => '{}' after removal of '{}' becomes '{}'" % version,
+                          [test[0], test[1], test[2]],
+                          locals()['version_%d' % version](test))
         print()
