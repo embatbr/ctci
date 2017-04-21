@@ -2,11 +2,30 @@
 """
 
 
+def describe_test(description, args):
+    return description.format(*args)
+
+def check_test(outcome):
+    if outcome == True:
+        return 'SUCCESS'
+    elif outcome == False:
+        return 'FAIL'
+
+    raise Exception("'outcome' must be a boolean.")
+
+def test_question(description, args, outcome):
+    print('{}: {}'.format(describe_test(description, args), check_test(outcome)))
+
+
 def show_matrix(matrix):
+    ret = ''
+
     for line in matrix:
         for elto in line:
-            print(elto, end=' ')
-        print()
+            ret = '{}{} '.format(ret, elto)
+        ret = '{}\n '.format(ret)
+
+    return ret
 
 
 class LinkedListNode(object):
@@ -203,3 +222,51 @@ class TreeNode(object):
 
     def __str__(self):
         return '{} => ({}, {})'.format(self.value, str(self.left), str(self.right))
+
+def insert_into_tree(root, eltos):
+    middle = len(eltos) // 2
+    if not root:
+        root = TreeNode(eltos[middle])
+    else:
+        root.add(eltos[middle])
+
+    left = eltos[ : middle]
+    if left:
+        insert_into_tree(root, left)
+    right = eltos[middle + 1 : ]
+    if right:
+        insert_into_tree(root, right)
+
+    return root
+
+
+def mergesort(array):
+    helper = [None for _ in range(len(array))]
+    _mergesort(array, helper, 0, len(array) - 1)
+
+def _mergesort(array, helper, low, high):
+    if low < high:
+        middle = (low + high) // 2
+        _mergesort(array, helper, low, middle)          # sort left half
+        _mergesort(array, helper, middle + 1, high)     # sort right half
+        merge(array, helper, low, middle, high)
+
+def merge(array, helper, low, middle, high):
+    for i in range(low, high + 1):
+        helper[i] = array[i]
+
+    left = cur = low
+    right = middle + 1
+
+    while (left <= middle) and (right <= high):
+        if helper[left] <= helper[right]:
+            array[cur] = helper[left]
+            left += 1
+        else:
+            array[cur] = helper[right]
+            right += 1
+        cur += 1
+
+    remaining = middle - left
+    for i in range(0, remaining + 1):
+        array[cur + i] = helper[left + 1]

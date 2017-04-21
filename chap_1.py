@@ -1,53 +1,69 @@
 from copy import deepcopy
-from utils import show_matrix
+
+from utils import test_question, show_matrix, check_test
 
 
 def question_1():
     print('##### Is Unique #####\n')
 
     # time: O(N**2); space: O(1)
+    # no additional structures used
     def version_1(test):
-        size = len(test)
+        (given, expected) = test
+
+        size = len(given)
 
         for i in range(size):
             for j in range(i + 1, size):
-                if test[i] == test[j]:
-                    return False
+                if given[i] == given[j]:
+                    return expected == False
 
-        return True
+        return expected == True
 
     # time: O(N); space: O(N)
+    # using a hash set
     def version_2(test):
+        (given, expected) = test
+
         chars = set()
 
-        for t in test:
+        for t in given:
             if t in chars:
-                return False
+                return expected == False
             chars.add(t)
 
-        return True
+        return expected == True
 
-    # considers only lowercase letters
-    # hint #117
     # time: O(N); space: O(1)
+    # using a bit mask (hint 117; considers only lowercase letters)
     def version_3(test):
+        (given, expected) = test
+
         mask = 0
 
-        for t in test:
+        for t in given:
             vector = 1 << (ord(t) - 97)
             if (mask & vector) == vector:
-                return False
+                return expected == False
             mask = mask | vector
 
-        return True
+        return expected == True
 
-    tests = ['', 'abcdefghijklmnopqrstuwvxyz', 'abcdefghijklmnopqrstuwvxyza',
-             'aabbcc', 'mdifnafanfa', 'aifasoid', 'zyxvwutsrqponmlkjihgfedcba']
+    tests = [
+        ('', True),
+        ('abcdefghijklmnopqrstuwvxyz', True),
+        ('abcdefghijklmnopqrstuwvxyza', False),
+        ('aabbcc', False),
+        ('mdifnafanfa', False),
+        ('aifasoid', False),
+        ('zyxvwutsrqponmlkjihgfedcba', True)
+    ]
 
     for test in tests:
-        print("version 1 => '{}' is unique: {}".format(test, version_1(test)))
-        print("version 2 => '{}' is unique: {}".format(test, version_2(test)))
-        print("version 3 => '{}' is unique: {}".format(test, version_3(test)))
+        for version in range(1, 4):
+            test_question("version %d => '{}' is {}unique" % version,
+                          [test[0], '' if test[1] else 'NOT '],
+                          locals()['version_%d' % version](test))
         print()
 
 
@@ -55,22 +71,22 @@ def question_2():
     print('##### Check Permutation #####\n')
 
     # time: O(A*logA + B*logB); space: O(A + B)
+    # Python uses Timsort, with worst cases: O(N*logN) and O(N) for time and space, respectively
     def version_1(test):
-        A = test[0]
-        B = test[1]
+        (A, B, expected) = test
 
         if len(A) != len(B):
-            return False
+            return expected == False
 
-        return sorted(A) == sorted(B)
+        return expected == (sorted(A) == sorted(B))
 
-    # time: O(A), if A and B have the same length; space: O(a + b), with a and b the sizes of stats_A and stats_B
+    # time: O(len(A)); space: O(len(A))
+    # worst case complexity only happens when A and B have the same length
     def version_2(test):
-        A = test[0]
-        B = test[1]
+        (A, B, expected) = test
 
         if len(A) != len(B):
-            return False
+            return expected == False
 
         stats_A = dict()
         stats_B = dict()
@@ -86,16 +102,21 @@ def question_2():
                 stats_B[B_i] = 0
             stats_B[B_i] += 1
 
-        return stats_A == stats_B
+        return expected == (stats_A == stats_B)
 
-    tests = [('', ''), ('aabbcc', 'abc'), ('abcaa', 'abcaa'), ('abc', 'bca'),
-             ('abc', 'bda'), ('aabccc', 'aabccccccc')]
+    tests = [
+        ('', '', True),
+        ('aabbcc', 'abc', False),
+        ('abcaa', 'abcaa', True),
+        ('abc', 'bca', True),
+        ('abc', 'bda', False),
+        ('aabccc', 'aabccccccc', False)]
 
     for test in tests:
-        print("version 1 => '{}' is permutation of '{}': {}".format(test[0],
-            test[1], version_1(test)))
-        print("version 2 => '{}' is permutation of '{}': {}".format(test[0],
-            test[1], version_2(test)))
+        for version in range(1, 3):
+            test_question("version %d => '{}' is {}permutation of '{}'" % version,
+                          [test[0], '' if test[2] else 'NOT ', test[1]],
+                          locals()['version_%d' % version](test))
         print()
 
 
@@ -127,6 +148,7 @@ def question_3():
         return chars == expected
 
     # time: O(length); space: O(1)
+    # replaces ' ' by '%20' in place (assuming it has enough space after the word)
     def version_2(test):
         chars = list(test[0]) # doesn't count in the O(.) calculation
         length = test[1]
@@ -152,16 +174,19 @@ def question_3():
 
         return chars == expected
 
-    tests = [('Mr John Smith        ', 13, 'Mr%20John%20Smith'),
-             (' Mr   John Smith                 ', 18, '%20Mr%20%20%20John%20Smith%20%20'),
-             ('        ', 2, '%20%20'), ('    ', 0, ''),
-             ('Mr   John Smith            ', 15, 'Mr%20%20%20John%20Smith')]
+    tests = [
+        ('Mr John Smith        ', 13, 'Mr%20John%20Smith'),
+        (' Mr   John Smith                 ', 18, '%20Mr%20%20%20John%20Smith%20%20'),
+        ('        ', 2, '%20%20'),
+        ('    ', 0, ''),
+        ('Mr   John Smith            ', 15, 'Mr%20%20%20John%20Smith')
+    ]
 
     for test in tests:
-        print("version 1 => '{}' URLfied first {} chars to '{}': {}".format(test[0],
-            test[1], test[2], version_1(test)))
-        print("version 2 => '{}' URLfied first {} chars to '{}': {}".format(test[0],
-            test[1], test[2], version_2(test)))
+        for version in range(1, 3):
+            test_question("version %d => '{}' URLfied first {} chars to '{}'" % version,
+                          [test[0], test[1], test[2]],
+                          locals()['version_%d' % version](test))
         print()
 
 
@@ -169,12 +194,15 @@ def question_4():
     print('##### Palindrome Permutation #####\n')
 
     # time: O(N); space: O(N)
+    # using hash sets
     def version_1(test):
+        (given, expected) = test
+
         odds = set()
         evens = set()
 
-        test = test.lower() # O(N)
-        for t in test:
+        given = given.lower() # O(N)
+        for t in given:
             c = ord(t)
             if ord('a') <= c <= ord('z'):
                 if c in odds:
@@ -186,15 +214,18 @@ def question_4():
                 else: # 1st time
                     odds.add(c)
 
-        return len(odds) <= 1
+        return (len(odds) <= 1) == expected
 
     # time: O(N); space: O(1)
+    # using bit masks
     def version_2(test):
+        (given, expected) = test
+
         odds = 0
         evens = 0
 
-        test = test.lower() # O(N)
-        for t in test:
+        given = given.lower() # O(N)
+        for t in given:
             c = ord(t)
             if ord('a') <= c <= ord('z'):
                 vec = 1 << (c - 97)
@@ -213,18 +244,26 @@ def question_4():
             if (odds & vec) == vec:
                 num_odds_bits += 1
             if num_odds_bits > 1:
-                return False
+                return False == expected
 
-        return num_odds_bits <= 1
+        return (num_odds_bits <= 1) == expected
 
-    tests = ['Tact Coa', 'arara', 'casa', '', 'palindrome', 'Madam I\'m Adam',
-             'Madam I am Adam', 'coco']
+    tests = [
+        ('Tact Coa', True),
+        ('arara', True),
+        ('casa', False),
+        ('', True),
+        ('palindrome', False),
+        ('Madam I\'m Adam', True),
+        ('Madam I am Adam', False),
+        ('coco', True)
+    ]
 
     for test in tests:
-        print("version 1 => '{}' has palindrome permutation: {}".format(test,
-            version_1(test)))
-        print("version 2 => '{}' has palindrome permutation: {}".format(test,
-            version_2(test)))
+        for version in range(1, 3):
+            test_question("version %d => '{}' does {}have palindrome permutation" % version,
+                          [test[0], '' if test[1] else 'NOT '],
+                          locals()['version_%d' % version](test))
         print()
 
 
@@ -235,6 +274,8 @@ def question_5():
     def version_1(test):
         original = test[0]
         edited = test[1]
+        expected = test[2]
+
         diff_len = len(original) - len(edited)
 
         if diff_len == 0: # possible replace
@@ -245,9 +286,9 @@ def question_5():
                 if original[i] != edited[i]:
                     num_diffs += 1
                 if num_diffs > 1:
-                    return False
+                    return False == expected
 
-            return True
+            return True == expected
 
         elif diff_len == 1: # possible removal
             i = j = 0
@@ -259,9 +300,9 @@ def question_5():
                 i += 1
 
                 if i - j == 2:
-                    return False
+                    return False == expected
 
-            return True
+            return True == expected
 
         elif diff_len == -1: # possible insertion
             i = j = 0
@@ -273,16 +314,18 @@ def question_5():
                 j += 1
 
                 if i - j == -2:
-                    return False
+                    return False == expected
 
-            return True
+            return True == expected
 
-        return False
+        return False == expected
 
     # time: O(N), where N is the size of the smaller string; space: O(1)
     def version_2(test):
         original = test[0]
         edited = test[1]
+        expected = test[2]
+
         diff_len = len(original) - len(edited)
 
         if diff_len == 0: # possible replace
@@ -293,9 +336,9 @@ def question_5():
                 if original[i] != edited[i]:
                     num_diffs += 1
                 if num_diffs > 1:
-                    return False
+                    return False == expected
 
-            return True
+            return True == expected
 
         elif (diff_len == 1) or (diff_len == -1): # possible removal or insertion
             i = j = 0
@@ -311,20 +354,22 @@ def question_5():
                         j += 1
 
                 if (diff_len == 1 and i - j == 2) or (diff_len == -1 and i - j == -2):
-                    return False
+                    return False == expected
 
-            return True
+            return True == expected
 
-        return False
+        return False == expected
 
     # time: O(N), where N is the size of the smaller string; space: O(1)
     def version_3(test):
         original = test[0]
         edited = test[1]
+        expected = test[2]
+
         diff_len = len(original) - len(edited)
 
         if diff_len < -1 or diff_len > 1:
-            return False
+            return False == expected
 
         num_diffs = i = j = 0
         while (i < len(original)) and (j < len(edited)):
@@ -332,7 +377,7 @@ def question_5():
                 if original[i] != edited[i]:
                     num_diffs += 1
                 if num_diffs > 1:
-                    return False
+                    return False == expected
 
                 i += 1
                 j += 1
@@ -347,29 +392,34 @@ def question_5():
                         j += 1
 
                 if (diff_len == 1 and i - j == 2) or (diff_len == -1 and i - j == -2):
-                    return False
+                    return False == expected
 
-        return True
+        return True == expected
 
-    tests = [('pale', 'ple'), ('pales', 'pale'), ('pales', 'bale'), ('pale', 'bale'),
-             ('pale', 'bake'), ('ball', 'balls'), ('ball', 'ballss'), ('ball', 'calls'),
-             ('ball', 'cball'), ('ball', 'cballss'), ('ball', 'call')]
+    tests = [
+        ('pale', 'ple', True),
+        ('pales', 'pale', True),
+        ('pales', 'bale', False),
+        ('pale', 'bale', True),
+        ('pale', 'bake', False),
+        ('ball', 'balls', True),
+        ('ball', 'ballss', False),
+        ('ball', 'calls', False),
+        ('ball', 'cball', True),
+        ('ball', 'cballss', False),
+        ('ball', 'call', True)
+    ]
 
     for test in tests:
-        print("version 1 => '{}' is on way to '{}': {}".format(test[0], test[1],
-            version_1(test)))
-        print("version 2 => '{}' is on way to '{}': {}".format(test[0], test[1],
-            version_2(test)))
-        print("version 3 => '{}' is on way to '{}': {}".format(test[0], test[1],
-            version_3(test)))
+        for version in range(1, 4):
+            test_question("version %d => '{}' is {}one way to '{}'" % version,
+                          [test[0], '' if test[2] else 'NOT ', test[1]],
+                          locals()['version_%d' % version](test))
         print()
 
 
 def question_6():
     print('##### String Compression #####\n')
-
-    tests = [('abc', 'abc'), ('aabbcc', 'aabbcc'), ('aabbccc', 'a2b2c3'),
-             ('aabcccccaaa', 'a2b1c5a3')]
 
     # time: O(N) or O(N*d), where O(d) is the order to turn int into string; space: O(N)
     def version_1(test):
@@ -395,9 +445,18 @@ def question_6():
 
         return final == expected
 
+    tests = [
+        ('abc', 'abc'),
+        ('aabbcc', 'aabbcc'),
+        ('aabbccc', 'a2b2c3'),
+        ('aabcccccaaa', 'a2b1c5a3')
+    ]
+
     for test in tests:
-        print("version 1 => '{}' is compressed to '{}': {}".format(test[0], test[1],
-            version_1(test)))
+        for version in range(1, 2):
+            test_question("version %d => '{}' is compressed to '{}'" % version,
+                          [test[0], test[1]],
+                          locals()['version_%d' % version](test))
         print()
 
 
@@ -447,12 +506,10 @@ def question_7():
     ]
 
     for test in tests:
-        print("version 1 =>\nmatrix")
-        show_matrix(test[0])
-        result = version_1(test)
-        print("rotated to")
-        show_matrix(test[1])
-        print(result)
+        for version in range(1, 2):
+            test_question("version %d =>\nmatrix\n\n {}\nrotated to\n\n {}\n" % version,
+                          [show_matrix(test[0]), show_matrix(test[1])],
+                          locals()['version_%d' % version](test))
         print()
 
 
@@ -546,31 +603,15 @@ def question_8():
     ]
 
     for test in tests:
-        print("version 1 =>\nmatrix")
-        show_matrix(test[0])
-        result = version_1(test)
-        print('rotated to')
-        show_matrix(test[1])
-        print(result)
-        print()
-
-        test_version_2 = deepcopy(test)
-        print("version 2 =>\nmatrix")
-        show_matrix(test_version_2[0])
-        result = version_2(test_version_2)
-        print('rotated to')
-        show_matrix(test_version_2[1])
-        print(result)
-        print()
-
-        test_version_3 = deepcopy(test)
-        print("version 3 =>\nmatrix")
-        show_matrix(test_version_3[0])
-        result = version_3(test_version_3)
-        print('rotated to')
-        show_matrix(test_version_3[1])
-        print(result)
-        print()
+        for version in range(1, 4):
+            test_copy = deepcopy(test)
+            print("version %d =>\nmatrix\n" % version)
+            print('', show_matrix(test_copy[0]))
+            result = version_1(test_copy)
+            print('rotated to\n')
+            print('', show_matrix(test_copy[1]))
+            print(check_test(result))
+            print()
 
 
 def question_9():
@@ -579,31 +620,33 @@ def question_9():
     # time: O(N); space: O(N) (considering the indexed strings must be copied)
     def version_1(test):
         given = test[0]
-        expected = test[1]
+        rotated = test[1]
+        expected = test[2]
 
-        if len(given) != len(expected):
-            return False
+        if len(given) != len(rotated):
+            return False == expected
 
         for i in range(len(given)):
-            i_comp = len(expected) - i
+            i_comp = len(rotated) - i
 
-            if given[i : ] == expected[ : i_comp] and expected[i_comp : ] == given[ : i]:
-                return True
+            if given[i : ] == rotated[ : i_comp] and rotated[i_comp : ] == given[ : i]:
+                return True == expected
 
-        return False
+        return False == expected
 
     def version_2(test):
         given = test[0]
-        expected = test[1]
+        rotated = test[1]
+        expected = test[2]
 
-        if len(given) != len(expected):
-            return False
+        if len(given) != len(rotated):
+            return False == expected
 
         i = j = 0
         found_first_equal = False
-        while j < len(expected):
+        while j < len(rotated):
             g = given[i]
-            e = expected[j]
+            e = rotated[j]
 
             i = (i + 1) % len(given)
 
@@ -612,19 +655,27 @@ def question_9():
                 j += 1
 
                 if j > len(given):
-                    return False
+                    return False == expected
 
             if found_first_equal and (g != e):
-                return False
+                return False == expected
 
-        return True
+        return True == expected
 
-    tests = [('waterbottle', 'erbottlewat'), ('waterbottle', 'erbottlehov'),
-             ('waterbottle', 'bottlewater'), ('waterbottle', 'bottlehover'),
-             ('waterbottle', 'bottlewaters'), ('waterbottle', 'erbottlewaterbottlewat'),
-             ('erbottlewaterbottlewat', 'waterbottle'), ('erbottlewaterbottlewat', 'erbottlewat')]
+    tests = [
+        ('waterbottle', 'erbottlewat', True),
+        ('waterbottle', 'erbottlehov', False),
+        ('waterbottle', 'bottlewater', True),
+        ('waterbottle', 'bottlehover', False),
+        ('waterbottle', 'bottlewaters', False),
+        ('waterbottle', 'erbottlewaterbottlewat', False),
+        ('erbottlewaterbottlewat', 'waterbottle', False),
+        ('erbottlewaterbottlewat', 'erbottlewat', False)
+    ]
 
     for test in tests:
-        print("version 1 => '{}' is a rotation of '{}': {}".format(test[0], test[1], version_1(test)))
-        print("version 2 => '{}' is a rotation of '{}': {}".format(test[0], test[1], version_2(test)))
+        for version in range(1, 3):
+            test_question("version %d => '{}' is {}a rotation of '{}'" % version,
+                          [test[0], '' if test[2] else 'NOT ', test[1]],
+                          locals()['version_%d' % version](test))
         print()
