@@ -9,8 +9,8 @@
 1. Arrays and Strings
     - All done
 2. Linked Lists
-    - Done: 1 to 3
-    - TODO: 5, 7 and 8
+    - Done: 1, 2, 3, 5*, 8
+    - TODO: 7 and 5++
 3. Stacks and Queues
     - Done: 1 to 5
 4. Trees and Graphs

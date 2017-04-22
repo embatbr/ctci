@@ -2,6 +2,9 @@
 """
 
 
+# ### METACODE ###
+
+
 def describe_test(description, args):
     return description.format(*args)
 
@@ -28,6 +31,9 @@ def show_matrix(matrix):
     return ret
 
 
+# ### LISTS, STACKS AND QUEUES ###
+
+
 class LinkedListNode(object):
 
     def __init__(self, value):
@@ -48,6 +54,16 @@ def create_linked_list(seq, doubly=False):
             head = tail = node
 
     return (head, tail)
+
+def reduce_linked_list_to_list(head):
+    ret = list()
+
+    node = head
+    while node:
+        ret.append(node.value)
+        node = node.next
+
+    return ret
 
 def reduce_linked_list_to_str(head):
     string = ''
@@ -111,6 +127,9 @@ class Stack(object):
             item = item.below
 
         return array
+
+
+# ### GRAPHS AND TREES
 
 
 class ArrayQueue(object):
