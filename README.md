@@ -12,7 +12,8 @@
     - Done: 1, 2, 3, 5*, 8
     - TODO: 7 and 5++
 3. Stacks and Queues
-    - Done: 1 to 5
+    - Done: 1, 2, 3, 4, 5
+    - TODO: 6
 4. Trees and Graphs
     - Done: 1 to 3
 5. Bit Manipulation
@@ -21,6 +22,7 @@
 8. Recursion and Dynamic Programming
 9. System Design and Scalability
 10. Sorting and Searching
+    - TODO everyone!
 11. Testing
 12. C and C++
 13. Java
@@ -28,3 +30,11 @@
 15. Threads and Locks
 16. Moderate
 17. Hard
+
+## Other materials
+
+- [High availability](https://en.wikipedia.org/wiki/High_availability)
+- [Sharding](https://en.wikipedia.org/wiki/Shard_(database_architecture))
+- [Distributed data store](https://en.wikipedia.org/wiki/Distributed_data_store)
+- [Amazon DynamoDB](https://aws.amazon.com/dynamodb/)
+- [Cassandra](http://cassandra.apache.org/)
