@@ -2,6 +2,7 @@ from utils import mergesort
 
 
 def question_1():
+    print('##### Sorted Merge #####\n')
 
     tests = [
         [6, 3, 1, 7, 2, 8, 9, 4],

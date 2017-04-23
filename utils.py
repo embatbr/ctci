@@ -129,6 +129,107 @@ class Stack(object):
         return array
 
 
+# ### SORTS ###
+
+
+def _sorting_loop(array, size, forward=True):
+    swapped = False
+    iterator = range(size - 1) if forward else range(size - 2, -1, -1)
+
+    for i in iterator:
+        if array[i] > array[i + 1]:
+            (array[i], array[i + 1]) = (array[i + 1], array[i])
+            swapped = True
+
+    return swapped
+
+
+# time: O(N^2); space: O(1)
+# details: https://en.wikipedia.org/wiki/Bubble_sort
+def bubble_sort(array):
+    size = len(array)
+    swapped = True
+
+    while swapped:
+        swapped = _sorting_loop(array, size)
+        size = size - 1
+
+
+# time: O(N^2); space: O(1)
+# details: https://en.wikipedia.org/wiki/Cocktail_shaker_sort
+def cocktail_shaker_sort(array):
+    size = len(array)
+    swapped = True
+
+    while swapped:
+        swapped = _sorting_loop(array, size)
+        if swapped:
+            swapped = _sorting_loop(array, size, forward=False)
+            size = size - 1
+
+
+# time: O(N^2); space: O(1)
+# details: https://en.wikipedia.org/wiki/Selection_sort
+def selection_sort(array):
+    size = len(array)
+
+    for i in range(size):
+        ix_min = i
+        for j in range(i + 1, size):
+            if array[j] < array[ix_min]:
+                ix_min = j
+
+        if ix_min != i:
+            (array[i], array[ix_min]) = (array[ix_min], array[i])
+
+
+# time: O(N^2); space: O(1)
+# details: https://en.wikipedia.org/wiki/Insertion_sort
+def insertion_sort(array):
+    N = len(array)
+
+    for i in range(1, N):
+        pivot = array[i]
+        for j in range(i - 1, -1, -1):
+            if array[j] <= pivot:
+                break
+            array[j + 1] = array[j]
+        array[j] = pivot # j instead of j + 1 due to the break before
+
+
+# TODO correct it!
+def mergesort(array):
+    helper = [None for _ in range(len(array))]
+    _mergesort(array, helper, 0, len(array) - 1)
+
+def _mergesort(array, helper, low, high):
+    if low < high:
+        middle = (low + high) // 2
+        _mergesort(array, helper, low, middle)          # sort left half
+        _mergesort(array, helper, middle + 1, high)     # sort right half
+        merge(array, helper, low, middle, high)
+
+def merge(array, helper, low, middle, high):
+    for i in range(low, high + 1):
+        helper[i] = array[i]
+
+    left = cur = low
+    right = middle + 1
+
+    while (left <= middle) and (right <= high):
+        if helper[left] <= helper[right]:
+            array[cur] = helper[left]
+            left += 1
+        else:
+            array[cur] = helper[right]
+            right += 1
+        cur += 1
+
+    remaining = middle - left
+    for i in range(0, remaining + 1):
+        array[cur + i] = helper[left + 1]
+
+
 # ### GRAPHS AND TREES
 
 
@@ -257,55 +358,3 @@ def insert_into_tree(root, eltos):
         insert_into_tree(root, right)
 
     return root
-
-
-# ### SORTS ###
-
-
-def insertion_sort(array, in_place=True):
-    output = array if in_place else list(array)
-    N = len(output)
-
-    for i in range(1, N):
-        pivot = output[i]
-        hole_pos = i
-
-        while hole_pos > 0 and pivot < output[hole_pos - 1]:
-            output[hole_pos] = output[hole_pos - 1]
-            hole_pos = hole_pos - 1
-
-        output[hole_pos] = pivot
-
-    return output
-
-
-def mergesort(array):
-    helper = [None for _ in range(len(array))]
-    _mergesort(array, helper, 0, len(array) - 1)
-
-def _mergesort(array, helper, low, high):
-    if low < high:
-        middle = (low + high) // 2
-        _mergesort(array, helper, low, middle)          # sort left half
-        _mergesort(array, helper, middle + 1, high)     # sort right half
-        merge(array, helper, low, middle, high)
-
-def merge(array, helper, low, middle, high):
-    for i in range(low, high + 1):
-        helper[i] = array[i]
-
-    left = cur = low
-    right = middle + 1
-
-    while (left <= middle) and (right <= high):
-        if helper[left] <= helper[right]:
-            array[cur] = helper[left]
-            left += 1
-        else:
-            array[cur] = helper[right]
-            right += 1
-        cur += 1
-
-    remaining = middle - left
-    for i in range(0, remaining + 1):
-        array[cur + i] = helper[left + 1]
