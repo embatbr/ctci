@@ -132,6 +132,8 @@ class Stack(object):
 # ### SORTS ###
 
 
+# time: O(N); space: O(1)
+# auxiliar function for bubble and cocktail shaker sorts
 def _sorting_loop(array, size, forward=True):
     swapped = False
     iterator = range(size - 1) if forward else range(size - 2, -1, -1)
@@ -197,37 +199,43 @@ def insertion_sort(array):
         array[j] = pivot # j instead of j + 1 due to the break before
 
 
-# TODO correct it!
-def mergesort(array):
-    helper = [None for _ in range(len(array))]
-    _mergesort(array, helper, 0, len(array) - 1)
+# auxiliar function for merge sorts (both top-down and bottom-up)
+def _copy_array(source, target, ix_begin, ix_end):
+    for i in range(ix_begin, ix_end):
+        target[i] = source[i]
 
-def _mergesort(array, helper, low, high):
-    if low < high:
-        middle = (low + high) // 2
-        _mergesort(array, helper, low, middle)          # sort left half
-        _mergesort(array, helper, middle + 1, high)     # sort right half
-        merge(array, helper, low, middle, high)
 
-def merge(array, helper, low, middle, high):
-    for i in range(low, high + 1):
-        helper[i] = array[i]
+# ### HEAP ###
 
-    left = cur = low
-    right = middle + 1
 
-    while (left <= middle) and (right <= high):
-        if helper[left] <= helper[right]:
-            array[cur] = helper[left]
-            left += 1
-        else:
-            array[cur] = helper[right]
-            right += 1
-        cur += 1
+class Heap(object):
 
-    remaining = middle - left
-    for i in range(0, remaining + 1):
-        array[cur + i] = helper[left + 1]
+    def __init__(self, depth):
+        self.capacity = 2**depth - 1
+        self.size = 0
+        self.array = [None] * self.capacity
+
+    def add(self, value):
+        if self.size == self.capacity:
+            return None
+
+        self.array[self.size] = value
+        index = self.size
+        self.size = self.size + 1
+        return index
+
+    def remove(self, index):
+        if (0 > index) or (index >= self.size):
+            return None
+
+        value = self.array[index]
+        if index < (self.size - 1):
+            self.array[index] = self.array[self.size - 1]
+        self.array[self.size - 1] = None
+
+        self.size = self.size - 1
+
+        return value
 
 
 # ### GRAPHS AND TREES
