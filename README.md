@@ -22,7 +22,8 @@
 8. Recursion and Dynamic Programming
 9. System Design and Scalability
 10. Sorting and Searching
-    - TODO everyone!
+    - DONE: 1, 2
+    - TODO the rest!
 11. Testing
 12. C and C++
 13. Java
