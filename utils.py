@@ -202,10 +202,53 @@ def insertion_sort(array):
         array[j] = pivot # j instead of j + 1 due to the break before
 
 
-# auxiliar function for merge sorts (both top-down and bottom-up)
-def _copy_array(source, target, ix_begin, ix_end):
-    for i in range(ix_begin, ix_end):
-        target[i] = source[i]
+# time: O(N); space: O(1) (the 'aux' array is part of the input)
+def _combine(array, aux, ix_begin, ix_middle, ix_end):
+    ix_left = ix_begin
+    ix_right = ix_middle + 1
+    ix_aux = ix_begin
+
+    while (ix_left <= ix_middle) and (ix_right <= ix_end):
+        left = array[ix_left]
+        right = array[ix_right]
+
+        if right < left:
+            aux[ix_aux] = right
+            ix_right += 1
+        else:
+            aux[ix_aux] = left
+            ix_left += 1
+        ix_aux += 1
+
+    # reminders from the lower half
+    while (ix_aux <= ix_end) and (ix_left <= ix_middle):
+        aux[ix_aux] = array[ix_left]
+        ix_aux += 1
+        ix_left += 1
+
+    # reminders from the higher half
+    while (ix_aux <= ix_end) and (ix_right <= ix_end):
+        aux[ix_aux] = array[ix_right]
+        ix_aux += 1
+        ix_right += 1
+
+    # copying 'aux' back to the original array
+    for i in range(ix_begin, ix_end + 1):
+        array[i] = aux[i]
+
+# time: O(logN); space: O(1) (the 'aux' array is part of the input)
+def _divide(array, aux, ix_begin, ix_end):
+    if ix_begin < ix_end:
+        ix_middle = (ix_begin + ix_end) // 2
+        _divide(array, aux, ix_begin, ix_middle)
+        _divide(array, aux, ix_middle + 1, ix_end)
+
+        _combine(array, aux, ix_begin, ix_middle, ix_end)
+
+# time: O(N*logN); space: O(N) (the 'aux' array is created here)
+def merge_sort(array):
+    aux = list(array)
+    _divide(array, aux, 0, len(array) - 1)
 
 
 # ### HEAP ###
@@ -261,6 +304,7 @@ class Heap(object):
 
         return value
 
+    # time: O(N), when is a simple heap, or O(N*logN), when is a sorted heap; space: O(1)
     def heapify(self, array):
         capacity = len(array)
         depth = math.ceil(math.log2(capacity + 1))
@@ -308,6 +352,7 @@ class SortedHeap(Heap):
 
         self._func = func
 
+    # time: O(logN); space: O(1)
     def _heapify_down(self, index):
         child_ix = self.left_child_index(index)
 
@@ -324,7 +369,7 @@ class SortedHeap(Heap):
             index = child_ix
             child_ix = self.left_child_index(index)
 
-
+    # time: O(logN); space: O(1)
     def _heapify_up(self):
         index = self._size - 1
         parent_index = self.parent_index(index)
