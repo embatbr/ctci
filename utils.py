@@ -2,6 +2,9 @@
 """
 
 
+import math
+
+
 # ### METACODE ###
 
 
@@ -208,34 +211,157 @@ def _copy_array(source, target, ix_begin, ix_end):
 # ### HEAP ###
 
 
+class HeapOverflowError(Exception):
+
+    def __init__(self):
+        self.message = 'Heap has reached maximum capacity.'
+
+
+class HeapUnderflowError(Exception):
+
+    def __init__(self):
+        self.message = 'Heap is empty.'
+
+
 class Heap(object):
 
-    def __init__(self, depth):
-        self.capacity = 2**depth - 1
-        self.size = 0
-        self.array = [None] * self.capacity
+    def __init__(self, depth=None):
+        self._capacity = 0
+        self._size = 0
+        self._array = None
+
+        if depth and isinstance(depth, int):
+            self._flush(depth)
+
+    def _flush(self, depth):
+        self._capacity = 2**depth - 1
+        self._size = 0
+        self._array = [None] * self._capacity
 
     def add(self, value):
-        if self.size == self.capacity:
-            return None
+        if self._size == self._capacity:
+            raise HeapOverflowError()
 
-        self.array[self.size] = value
-        index = self.size
-        self.size = self.size + 1
+        self._array[self._size] = value
+        index = self._size
+        self._size = self._size + 1
+
         return index
 
     def remove(self, index):
-        if (0 > index) or (index >= self.size):
-            return None
+        if (0 > index) or (index >= self._size):
+            raise HeapUnderflowError()
 
-        value = self.array[index]
-        if index < (self.size - 1):
-            self.array[index] = self.array[self.size - 1]
-        self.array[self.size - 1] = None
+        value = self._array[index]
+        if index < (self._size - 1):
+            self._array[index] = self._array[self._size - 1]
+        self._array[self._size - 1] = None
 
-        self.size = self.size - 1
+        self._size = self._size - 1
 
         return value
+
+    def heapify(self, array):
+        capacity = len(array)
+        depth = math.ceil(math.log2(capacity + 1))
+        self._flush(depth)
+
+        for x in array:
+            self.add(x)
+
+    def parent_index(self, index):
+        if index > 0:
+            return (index - 1) // 2
+        return None
+
+    def left_child_index(self, index):
+        child_index = 2 * index + 1
+        if child_index < self._size:
+            return child_index
+        return None
+
+    def right_child_index(self, index):
+        child_index = 2 * index + 2
+        if child_index < self._size:
+            return child_index
+        return None
+
+    def _to_str(self, index):
+        if index >= self._size:
+            return ''
+
+        left = self._to_str(index*2 + 1)
+        left = left if left == '' else ' ({})'.format(left)
+        right = self._to_str(index*2 + 2)
+        right = right if right == '' else ' ({})'.format(right)
+        return '{}{}{}'.format(self._array[index], left, right)
+
+
+    def __str__(self):
+        return self._to_str(0)
+
+
+class SortedHeap(Heap):
+
+    def __init__(self, depth=None, func=None):
+        super(SortedHeap, self).__init__(depth)
+
+        self._func = func
+
+    def _heapify_down(self, index):
+        child_ix = self.left_child_index(index)
+
+        while child_ix:
+            right_child_ix = self.right_child_index(index)
+            if right_child_ix and self._func(self._array[right_child_ix], self._array[child_ix]):
+                child_ix = right_child_ix
+
+            if self._func(self._array[index], self._array[child_ix]):
+                break
+
+            (self._array[index], self._array[child_ix]) = (self._array[child_ix], self._array[index])
+
+            index = child_ix
+            child_ix = self.left_child_index(index)
+
+
+    def _heapify_up(self):
+        index = self._size - 1
+        parent_index = self.parent_index(index)
+
+        while (index > 0) and (self._func(self._array[index], self._array[parent_index])):
+            value = self._array[index]
+            self._array[index] = self._array[parent_index]
+            self._array[parent_index] = value
+
+            index = parent_index
+            parent_index = self.parent_index(index)
+
+    def add(self, value):
+        index = super(SortedHeap, self).add(value)
+
+        self._heapify_up()
+
+        return index
+
+    def remove(self, index):
+        value = super(SortedHeap, self).remove(index)
+
+        self._heapify_down(index)
+
+        return value
+
+
+class MinHeap(SortedHeap):
+
+    def __init__(self, depth=None):
+        super(MinHeap, self).__init__(depth, lambda x, y: x < y)
+
+
+class MaxHeap(SortedHeap):
+
+    def __init__(self, depth=None):
+        super(MaxHeap, self).__init__(depth, lambda x, y: x > y)
 
 
 # ### GRAPHS AND TREES
