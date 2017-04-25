@@ -137,6 +137,7 @@ class Stack(object):
 
 # time: O(N); space: O(1)
 # auxiliar function for bubble and cocktail shaker sorts
+# param forward == False only happens for cocktail shaker sort
 def _sorting_loop(array, size, forward=True):
     swapped = False
     iterator = range(size - 1) if forward else range(size - 2, -1, -1)
@@ -202,6 +203,13 @@ def insertion_sort(array):
         array[j] = pivot # j instead of j + 1 due to the break before
 
 
+# time: O(N); space: O(1)
+def _copy_array(source, ix_source, target, ix_target, num_iterations):
+    for _ in range(num_iterations):
+        target[ix_target] = source[ix_source]
+        ix_target += 1
+        ix_source += 1
+
 # time: O(N); space: O(1) (the 'aux' array is part of the input)
 def _combine(array, aux, ix_begin, ix_middle, ix_end):
     ix_left = ix_begin
@@ -220,21 +228,10 @@ def _combine(array, aux, ix_begin, ix_middle, ix_end):
             ix_left += 1
         ix_aux += 1
 
-    # reminders from the lower half
-    while (ix_aux <= ix_end) and (ix_left <= ix_middle):
-        aux[ix_aux] = array[ix_left]
-        ix_aux += 1
-        ix_left += 1
-
-    # reminders from the higher half
-    while (ix_aux <= ix_end) and (ix_right <= ix_end):
-        aux[ix_aux] = array[ix_right]
-        ix_aux += 1
-        ix_right += 1
-
-    # copying 'aux' back to the original array
-    for i in range(ix_begin, ix_end + 1):
-        array[i] = aux[i]
+    # the first two lines are mutually exclusive
+    _copy_array(array, ix_left, aux, ix_aux, ix_middle - ix_left + 1)
+    _copy_array(array, ix_right, aux, ix_aux, ix_end - ix_right + 1)
+    _copy_array(aux, ix_begin, array, ix_begin, ix_end - ix_begin + 1)
 
 # time: O(logN); space: O(1) (the 'aux' array is part of the input)
 def _divide(array, aux, ix_begin, ix_end):
@@ -247,8 +244,66 @@ def _divide(array, aux, ix_begin, ix_end):
 
 # time: O(N*logN); space: O(N) (the 'aux' array is created here)
 def merge_sort(array):
-    aux = list(array)
-    _divide(array, aux, 0, len(array) - 1)
+    _divide(array, list(array), 0, len(array) - 1)
+
+
+# time: O(N); space: O(1)
+def _partition(array, ix_low, ix_hi, pivot):
+    while ix_low <= ix_hi:
+        while array[ix_low] < pivot:
+            ix_low += 1
+        while array[ix_hi] > pivot:
+            ix_hi -= 1
+
+        if ix_low <= ix_hi:
+            (array[ix_low], array[ix_hi]) = (array[ix_hi], array[ix_low])
+            ix_low += 1
+            ix_hi -= 1
+
+    return ix_low
+
+# time: O(N*logN); space: O(1)
+def _quick_sort(array, ix_low, ix_hi):
+    if ix_low < ix_hi:
+        ix_pivot = (ix_low + ix_hi) // 2
+        pivot = array[ix_pivot]
+        index = _partition(array, ix_low, ix_hi, pivot)
+        _quick_sort(array, ix_low, index - 1)
+        _quick_sort(array, index, ix_hi)
+
+# time: O(N*logN); space: O(1)
+def quick_sort(array):
+    _quick_sort(array, 0, len(array) - 1)
+
+
+# time: O(K*N) (where K is the number of k values); space: O(N)
+def radix_sort(array):
+    size = len(array)
+    k = 1
+    highest = max(array)
+
+    while k < highest:
+        buckets = dict()
+
+        for elto in array:
+            key = 0 if elto < k else (elto % (k * 10)) // k
+
+            if key in buckets:
+                buckets[key].append(elto)
+            else:
+                buckets[key] = [elto]
+
+        better_sorted_array = list()
+
+        for key in range(10):
+            if key in buckets:
+                bucket = buckets[key]
+                better_sorted_array.extend(bucket)
+
+        array = better_sorted_array
+        k = k * 10
+
+    return array
 
 
 # ### HEAP ###
